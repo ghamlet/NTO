@@ -1,4 +1,4 @@
-import cv2
+import cv2 
 import numpy as np
 import math
 
@@ -12,7 +12,7 @@ def distances(contour1, contour2):
     return distance
 
 
-my_photo = cv2.imread('C:/NTO/images/1c3b4119-11ad-4f2f-9573-5e3afa5fdd09.png')
+my_photo = cv2.imread("images/1c3b4119-11ad-4f2f-9573-5e3afa5fdd09.png")
 img_grey =cv2.cvtColor(my_photo,cv2.COLOR_BGR2GRAY)
 img_grey = cv2.Canny(my_photo,100,200)
 
@@ -24,8 +24,7 @@ ret,thresh_img = cv2.threshold(img_grey, thresh, 255, cv2.THRESH_BINARY)
 #find contours
 contours, hierarchy = cv2.findContours(thresh_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 contours = sorted(contours, key= cv2.contourArea,reverse=True)
-#create an empty image for contours
-img_contours = np.uint8(np.zeros((my_photo.shape[0],my_photo.shape[1])))
+
 
 shapes = []
 for cnt in contours:
@@ -47,58 +46,81 @@ num_shapes = len(shapes)
 
 print("Количество фигур: ", num_shapes)
 print("Типы фигур: ", shapes)
+
+
 max_dist = 0
+
+print(len(contours))
+
 for i in range(len(contours)):
     for j in range(i+1, len(contours)):
         distance = distances(contours[i],contours[j])
+        #print(distance)
+
         if distance> max_dist:
             max_dist = distance
-            n = contours.index(contours[i])
-            m = contours.index(contours[j])
-print('ind1=',n)
-print('ind2=',m)            
-print('dist=',distance)
-min_dist = 1000
-x2, y2, w2, h2 = cv2.boundingRect(contours[n])
-center1 = (x2 + w2 // 2, y2 + h2 // 2)
-for h in contours[m]:
-    x, y  = contours[m][h]
-    cnt= (x,y)
-    dist = cv2.pointPolygonTest (contours[n],cnt, True )
-    cv2.line(my_photo,center1,h,(255,0,0),2)
-    if dist< min_dist:
-        min_dist= dist
 
-distances = []
-print('cnt=',h)
-print(min_dist)
-print(contours[m])
-def clik(event, x, y, flags, params,):
-    if event == cv2.EVENT_LBUTTONDOWN:
-        b = my_photo[y,x,0]
-        g = my_photo[y,x,1]
-        r = my_photo[y,x,2]
-        print(f'{x},{y}')
-        print(f'{b},{g},{r}\n')
-        dist =cv2.pointPolygonTest(contours[0],(x,y),True)
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(my_photo, f'{x},{y}',(x,y), font,1,(0,0,0),2)
-        cv2.imshow('my_photo', my_photo)
-        print('dist',dist)
-    if event == cv2.EVENT_RBUTTONDOWN:
-        b = my_photo[y,x,0]
-        g = my_photo[y,x,1]
-        r = my_photo[y,x,2]
-        print(f'{x},{y}')
-        print(f'{b},{g},{r}\n')
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(my_photo, f'{b},{g},{r}',(x,y), font,1,(0,0,0),2)
-        cv2.imshow('my_photo', my_photo)
+            n = i
+           
+            m = j
+            print(n,m)
+
+# min_dist = 1000
+# x2, y2, w2, h2 = cv2.boundingRect(contours[n])
+# center1 = (x2 + w2 // 2, y2 + h2 // 2)
+
+
+
+for cnt_1 in contours[m]:
+   
+    x1, y1 = cnt_1[0]
+
+    for cnt_2 in contours[n]:
+        x2,y2 = cnt_2[0]
+
+
+        
+
+    
+    
+print(type(contours[n]))
+    # dist = cv2.pointPolygonTest(,(x,y), True )
+    # print(dist)
+    # cv2.line(my_photo,center1,h,(255,0,0),2)
+    # if dist< min_dist:
+    #     min_dist= dist
+
+# distances = []
+# print('cnt=',h)
+# print(min_dist)
+# print(contours[m])
+# def clik(event, x, y, flags, params,):
+#     if event == cv2.EVENT_LBUTTONDOWN:
+#         b = my_photo[y,x,0]
+#         g = my_photo[y,x,1]
+#         r = my_photo[y,x,2]
+#         print(f'{x},{y}')
+#         print(f'{b},{g},{r}\n')
+#         dist =cv2.pointPolygonTest(contours[0],(x,y),True)
+#         font = cv2.FONT_HERSHEY_SIMPLEX
+#         cv2.putText(my_photo, f'{x},{y}',(x,y), font,1,(0,0,0),2)
+#         cv2.imshow('my_photo', my_photo)
+#         print('dist',dist)
+#     if event == cv2.EVENT_RBUTTONDOWN:
+#         b = my_photo[y,x,0]
+#         g = my_photo[y,x,1]
+#         r = my_photo[y,x,2]
+#         print(f'{x},{y}')
+#         print(f'{b},{g},{r}\n')
+#         font = cv2.FONT_HERSHEY_SIMPLEX
+#         cv2.putText(my_photo, f'{b},{g},{r}',(x,y), font,1,(0,0,0),2)
+#         cv2.imshow('my_photo', my_photo)
 
 cv2.drawContours(my_photo, contours[m], -1, (0,255,0), 3)
+cv2.drawContours(my_photo, contours[n], -1, (0,255,0), 3)
+
 cv2.imshow('my_photo', my_photo) # выводим итоговое изображение в окно
-cv2.imshow('res', img_contours) # выводим итоговое изображение в окно
-cv2.setMouseCallback('my_photo',clik)    
+# cv2.setMouseCallback('my_photo',clik)    
 cv2.waitKey()
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()
   
